@@ -30,8 +30,7 @@ fun AppNavigation(
                     navController.navigateUp()
                 },
                 onRegisterSuccess = {
-                    // In a real app, you'd navigate to a different screen after successful registration
-                    // For this test, simply go back to login
+                    // just a mock register so go back to login
                     navController.navigateUp()
                 }
             )
