@@ -1,5 +1,6 @@
 package com.ryan.codigo1.presentation.common.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -31,7 +32,8 @@ fun PasswordTextField(
     onValueChange: (String) -> Unit,
     label: String,
     error: String? = null,
-    leadingIcon: @Composable (() -> Unit)? = null
+    leadingIcon: @Composable (() -> Unit)? = null,
+    backgroundColor: Color = Color.White
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -41,15 +43,9 @@ fun PasswordTextField(
         label = { Text(label) },
         leadingIcon = leadingIcon,
         trailingIcon = {
-            val image = if (passwordVisible) {
-                Icons.Default.VisibilityOff
-            } else {
-                Icons.Default.Visibility
-            }
-
             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                 Icon(
-                    imageVector = image,
+                    imageVector = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                     contentDescription = if (passwordVisible) "Hide password" else "Show password"
                 )
             }
@@ -62,10 +58,13 @@ fun PasswordTextField(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         isError = error != null,
         supportingText = error?.let { { Text(text = it) } },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(backgroundColor, RoundedCornerShape(8.dp)),
         shape = RoundedCornerShape(8.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            unfocusedBorderColor = Color(0xFFDDDDDD)
+            unfocusedBorderColor = Color.LightGray,
+            containerColor = backgroundColor
         )
     )
 }

@@ -1,5 +1,6 @@
 package com.ryan.codigo1.presentation.auth.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,21 +12,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -41,7 +39,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -66,7 +66,8 @@ fun RegisterScreen(
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Handle UI effects
+    var selectedGender by remember { mutableStateOf(state.gender) }
+
     LaunchedEffect(state) {
         if (state.error != null) {
             snackbarHostState.showSnackbar(state.error!!)
@@ -82,18 +83,18 @@ fun RegisterScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Create Account", color = Color.White) },
+                title = { },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color.White
+                            tint = Color.Black
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = Color.White
                 )
             )
         }
@@ -101,151 +102,268 @@ fun RegisterScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(Color(0xFFF5F5F5))
                 .padding(paddingValues)
-                .padding(24.dp)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.Top
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                horizontalAlignment = Alignment.Start
             ) {
-                Text(
-                    text = "Register",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF333333)
-                )
-
-                Text(
-                    text = "Create a new account",
-                    fontSize = 16.sp,
-                    color = Color(0xFF666666)
-                )
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                // Full Name field
-                OutlinedTextField(
-                    value = state.name,
-                    onValueChange = { viewModel.onEvent(AuthEvent.NameChanged(it)) },
-                    label = { Text("Full Name") },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = "Name"
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = "Almost there!",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
                         )
-                    },
-                    isError = state.nameError != null,
-                    supportingText = state.nameError?.let { { Text(text = it) } },
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = "Complete the form below to create your Ready To Travel account.",
+                            fontSize = 16.sp,
+                            color = Color.Gray
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = "*Mandatory",
+                            fontSize = 14.sp,
+                            color = Color.Gray
+                        )
+                    }
+
+                    Image(
+                        painter = painterResource(id = R.drawable.guitar),
+                        contentDescription = "Guitar Player",
+                        modifier = Modifier
+                            .size(80.dp)
+                            .padding(start = 8.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                OutlinedTextField(
+                    value = state.firstName,
+                    onValueChange = { viewModel.onEvent(AuthEvent.FirstNameChanged(it)) },
+                    label = { Text("First Name *") },
+                    isError = state.firstNameError != null,
+                    supportingText = state.firstNameError?.let { errorText -> { Text(text = errorText) } },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        unfocusedBorderColor = Color(0xFFDDDDDD)
+                        unfocusedBorderColor = Color.LightGray,
+                        containerColor = Color.White
                     )
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Email field
+                OutlinedTextField(
+                    value = state.lastName,
+                    onValueChange = { viewModel.onEvent(AuthEvent.LastNameChanged(it)) },
+                    label = { Text("Last Name *") },
+                    isError = state.lastNameError != null,
+                    supportingText = state.lastNameError?.let { errorText -> { Text(text = errorText) } },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        unfocusedBorderColor = Color.LightGray,
+                        containerColor = Color.White
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 OutlinedTextField(
                     value = state.email,
                     onValueChange = { viewModel.onEvent(AuthEvent.EmailChanged(it)) },
-                    label = { Text("Email") },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Email,
-                            contentDescription = "Email"
-                        )
-                    },
+                    label = { Text("Email Address *") },
                     isError = state.emailError != null,
-                    supportingText = state.emailError?.let { { Text(text = it) } },
+                    supportingText = state.emailError?.let { errorText -> { Text(text = errorText) } },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        unfocusedBorderColor = Color(0xFFDDDDDD)
+                        unfocusedBorderColor = Color.LightGray,
+                        containerColor = Color.White
                     )
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Phone Number field
-                OutlinedTextField(
-                    value = state.phone,
-                    onValueChange = { viewModel.onEvent(AuthEvent.PhoneChanged(it)) },
-                    label = { Text("Phone Number") },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Call,
-                            contentDescription = "Phone"
-                        )
-                    },
-                    isError = state.phoneError != null,
-                    supportingText = state.phoneError?.let { { Text(text = it) } },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        unfocusedBorderColor = Color(0xFFDDDDDD)
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Date of Birth field
                 OutlinedTextField(
                     value = state.dateOfBirth,
                     onValueChange = { viewModel.onEvent(AuthEvent.DateOfBirthChanged(it)) },
-                    label = { Text("Date of Birth (MM/DD/YYYY)") },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.DateRange,
-                            contentDescription = "Date of Birth"
-                        )
-                    },
+                    label = { Text("Date of Birth *") },
+                    placeholder = { Text("DD/MM/YYYY") },
                     isError = state.dateOfBirthError != null,
-                    supportingText = state.dateOfBirthError?.let { { Text(text = it) } },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    supportingText = state.dateOfBirthError?.let { errorText -> { Text(text = errorText) } },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        unfocusedBorderColor = Color(0xFFDDDDDD)
+                        unfocusedBorderColor = Color.LightGray,
+                        containerColor = Color.White
+                    ),
+                    trailingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.dob),
+                            contentDescription = "Calendar",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Gender *",
+                    fontSize = 16.sp,
+                    color = Color.Gray
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    FilterChip(
+                        selected = selectedGender == "Female",
+                        onClick = {
+                            selectedGender = "Female"
+                            viewModel.onEvent(AuthEvent.GenderChanged(selectedGender))
+                        },
+                        label = { Text("Female") },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = Color(0xFF4AC1A2),
+                            selectedLabelColor = Color.White
+                        )
+                    )
+
+                    FilterChip(
+                        selected = selectedGender == "Male",
+                        onClick = {
+                            selectedGender = "Male"
+                            viewModel.onEvent(AuthEvent.GenderChanged(selectedGender))
+                        },
+                        label = { Text("Male") },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = Color(0xFF4AC1A2),
+                            selectedLabelColor = Color.White
+                        )
+                    )
+                }
+
+                if (state.genderError != null) {
+                    Text(
+                        text = state.genderError!!,
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField(
+                    value = state.nationality ?: "",
+                    onValueChange = { viewModel.onEvent(AuthEvent.NationalityChanged(it)) },
+                    label = { Text("Nationality *") },
+                    isError = state.nationalityError != null,
+                    supportingText = state.nationalityError?.let { errorText -> { Text(text = errorText) } },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        unfocusedBorderColor = Color.LightGray,
+                        containerColor = Color.White
                     )
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Password field
-                PasswordTextField(
-                    value = state.password,
-                    onValueChange = { viewModel.onEvent(AuthEvent.PasswordChanged(it)) },
-                    label = "Password",
-                    error = state.passwordError,
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Lock,
-                            contentDescription = "Password"
-                        )
-                    }
+                OutlinedTextField(
+                    value = state.countryOfResidence ?: "",
+                    onValueChange = { viewModel.onEvent(AuthEvent.CountryOfResidenceChanged(it)) },
+                    label = { Text("Country of Residence *") },
+                    isError = state.countryOfResidenceError != null,
+                    supportingText = state.countryOfResidenceError?.let { errorText -> { Text(text = errorText) } },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        unfocusedBorderColor = Color.LightGray,
+                        containerColor = Color.White
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Confirm Password field
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = state.countryCode ?: "+65",
+                        onValueChange = { viewModel.onEvent(AuthEvent.CountryCodeChanged(it)) },
+                        label = { Text("Code") },
+                        modifier = Modifier.width(80.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            unfocusedBorderColor = Color.LightGray,
+                            containerColor = Color.White
+                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+                    )
+
+                    OutlinedTextField(
+                        value = state.phone,
+                        onValueChange = { viewModel.onEvent(AuthEvent.PhoneChanged(it)) },
+                        label = { Text("Mobile no. (Optional)") },
+                        isError = state.phoneError != null,
+                        supportingText = state.phoneError?.let { errorText -> { Text(text = errorText) } },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            unfocusedBorderColor = Color.LightGray,
+                            containerColor = Color.White
+                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                PasswordTextField(
+                    value = state.password,
+                    onValueChange = { viewModel.onEvent(AuthEvent.PasswordChanged(it)) },
+                    label = "Password *",
+                    error = state.passwordError,
+                    backgroundColor = Color.White
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 PasswordTextField(
                     value = state.confirmPassword,
                     onValueChange = { viewModel.onEvent(AuthEvent.ConfirmPasswordChanged(it)) },
-                    label = "Confirm Password",
+                    label = "Confirm Password *",
                     error = state.confirmPasswordError,
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Lock,
-                            contentDescription = "Confirm Password"
-                        )
-                    }
+                    backgroundColor = Color.White
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -256,24 +374,20 @@ fun RegisterScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
+                        containerColor = Color(0xFF4AC1A2), // Teal color like in the reference
                         disabledContainerColor = Color(0xFFBBDEFB)
                     ),
                     contentPadding = ButtonDefaults.ButtonWithIconContentPadding
                 ) {
-                    if (state.isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = Color.White
-                        )
-                    } else {
-                        Text(
-                            "Register",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
+                    Text(
+                        text = "Create my account now",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
                 }
+
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }

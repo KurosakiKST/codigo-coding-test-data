@@ -23,6 +23,6 @@ class AuthRepositoryImpl @Inject constructor() : AuthRepository {
     }
 
     override fun isUserLoggedIn(): Flow<Boolean> = flow {
-        emit(false) // Always logged out for this example
+        emit(false) // Always logged out for now
     }
 }
