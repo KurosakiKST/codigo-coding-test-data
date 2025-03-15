@@ -5,6 +5,9 @@ sealed class AuthEvent {
     data class EmailChanged(val email: String) : AuthEvent()
     data class PasswordChanged(val password: String) : AuthEvent()
     data class ConfirmPasswordChanged(val confirmPassword: String) : AuthEvent()
-    object RegisterClicked : AuthEvent()
-    object ErrorShown : AuthEvent() // To clear error after showing
+    data class PhoneChanged(val phone: String) : AuthEvent()
+    data class DateOfBirthChanged(val dateOfBirth: String) : AuthEvent()
+
+    data object RegisterClicked : AuthEvent()
+    data object ErrorShown : AuthEvent()
 }
